@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Algebras", "Algebras\Algebras.csproj", "{874B2A91-03AD-4FE7-982F-BE9C76AD43C7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParserSample", "Samples\ParserSample\ParserSample.csproj", "{D02A2404-B0DA-4F26-A86D-230A31B7D5D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{874B2A91-03AD-4FE7-982F-BE9C76AD43C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{874B2A91-03AD-4FE7-982F-BE9C76AD43C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{874B2A91-03AD-4FE7-982F-BE9C76AD43C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D02A2404-B0DA-4F26-A86D-230A31B7D5D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D02A2404-B0DA-4F26-A86D-230A31B7D5D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D02A2404-B0DA-4F26-A86D-230A31B7D5D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D02A2404-B0DA-4F26-A86D-230A31B7D5D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
