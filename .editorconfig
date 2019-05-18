@@ -1,0 +1,13 @@
+# http://editorconfig.org
+
+root = true
+
+[*]
+end_of_line = crlf
+insert_final_newline = true
+charset = utf-8
+indent_size = 2
+indent_style = space
+
+[*.{fs,fsx}]
+indent_style = space
