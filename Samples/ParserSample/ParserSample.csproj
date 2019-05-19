@@ -6,7 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Algebras.Impl\Algebras.Impl.csproj" />
     <ProjectReference Include="..\..\Algebras\Algebras.csproj" />
+    <ProjectReference Include="..\..\Parser\Parser.csproj" />
   </ItemGroup>
 
 </Project>

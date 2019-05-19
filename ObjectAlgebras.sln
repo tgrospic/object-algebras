@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Algebras.Impl", "Algebras.I
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Banking.Main", "Samples\BankingAppSample\Banking.Main\Banking.Main.csproj", "{51E57370-1B7D-4B1B-AAD9-6E18BDB8A77B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser", "Parser\Parser.csproj", "{B5293861-EADD-46D2-B209-63D5DCEE0587}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parser", "Parser\Parser.csproj", "{B5293861-EADD-46D2-B209-63D5DCEE0587}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{F9A5B30D-AF4C-47AB-8524-C358E1E5B378}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,6 +62,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D02A2404-B0DA-4F26-A86D-230A31B7D5D6} = {F9A5B30D-AF4C-47AB-8524-C358E1E5B378}
+		{BB10B519-B362-47D4-A6B3-8EEA7868E35C} = {F9A5B30D-AF4C-47AB-8524-C358E1E5B378}
+		{D3B88D18-D34F-40AF-8BD7-D92103F641AF} = {F9A5B30D-AF4C-47AB-8524-C358E1E5B378}
+		{ABFD3FCD-6055-49C0-B154-7DA220F88072} = {F9A5B30D-AF4C-47AB-8524-C358E1E5B378}
+		{51E57370-1B7D-4B1B-AAD9-6E18BDB8A77B} = {F9A5B30D-AF4C-47AB-8524-C358E1E5B378}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5410B945-169B-4BC5-953E-E16A85FD1F97}
