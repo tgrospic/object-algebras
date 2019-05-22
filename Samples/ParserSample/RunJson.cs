@@ -13,7 +13,7 @@ namespace Demo.RunJson {
 
     public static void Run() {
       // Create implementation instances (effect handlers) / pull dependencies
-      var parser = ( default( State<string> ), new ParserImpl() );
+      var parser = ( default( State<string> ), new ParserCharImpl1() );
       var json   = new JsonImpl();
 
       // Run parser

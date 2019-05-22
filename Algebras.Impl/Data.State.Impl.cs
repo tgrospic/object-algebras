@@ -151,10 +151,10 @@ namespace Data.State.Impl {
   }
 
   // Alt : Functor
-  public class AltState<s, G> : FunctorState<s, G>, AltAlg<State<s>> {
+  public class AltState<s, G, e> : FunctorState<s, G>, AltAlg<State<s>> {
     StateAlg<State<s>, G, s> st = StateImpl<s, G>.Instance;
-    EitherAlg<G, string>     ei;
-    public AltState( EitherAlg<G, string> ei, FunctorAlg<G> x ) : base( x ) { this.ei = ei; }
+    EitherAlg<G, e>          ei;
+    public AltState( EitherAlg<G, e> ei, FunctorAlg<G> x ) : base( x ) { this.ei = ei; }
     public virtual Func<App<State<s>, a>, App<State<s>, a>> alt<a>( App<State<s>, a> x ) => y =>
       st.makeState( ss => {
         var (aa, sss) = st.runState( x, ss );
@@ -167,11 +167,11 @@ namespace Data.State.Impl {
   }
 
   // ThrowError
-  public class ThrowErrorState<s, G> : ThrowErrorAlg<State<s>, string> {
+  public class ThrowErrorState<s, G, e> : ThrowErrorAlg<State<s>, e> {
     StateAlg<State<s>, G, s> st = StateImpl<s, G>.Instance;
-    EitherAlg<G, string>     ei;
-    public ThrowErrorState( EitherAlg<G, string> ei ) { this.ei = ei; }
-    public App<State<s>, a> throwError<a>( string error ) => st.makeState( ss => (ei.left<a>( error ), ss) );
+    EitherAlg<G, e>          ei;
+    public ThrowErrorState( EitherAlg<G, e> ei ) { this.ei = ei; }
+    public App<State<s>, a> throwError<a>( e error ) => st.makeState( ss => (ei.left<a>( error ), ss) );
   }
 
 }

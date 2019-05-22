@@ -14,7 +14,7 @@ namespace Demo.RunPuzzle {
 
     public static void Run() {
       // Create implementation
-      var parser = ( default( State<string> ), new ParserImpl() );
+      var parser = ( default( State<string> ), new ParserCharImpl1() );
 
       // Run parser
       RunParser( parser );
