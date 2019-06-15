@@ -10,7 +10,7 @@ namespace Parser.Json {
   /*
    * This interface represents the relationship between syntax and semantics.
    *
-   * It gives the JSON syntax and its instances give the JSON semantics. Although for JSON
+   * It gives the JSON syntax and its instances gives the JSON semantics. Although for JSON
    * there is no operational rules, syntax is not constrained in any way.
    */
   public interface JsonSymantics<j> {
@@ -28,19 +28,19 @@ namespace Parser.Json {
     static char to4Hex( (char a, char b, char c, char d) x ) =>
       Convert.ToChar( Int32.Parse( $"{x.a}{x.b}{x.c}{x.d}", NumberStyles.AllowHexSpecifier ) );
 
-    static (App<F, char>, __) hexEscaped<F, __>( this (F, __) impl )
+    static (App<F, char>, __) hexEscaped<F, __>( this (F, __) exp )
       where __ : ParserAlg<F, char>, ApplyAlg<F>, AltAlg<F> =>
-        impl.hexDigit().zip( impl.hexDigit(), impl.hexDigit(), impl.hexDigit() ).map( to4Hex );
+        exp.hexDigit().zip( exp.hexDigit(), exp.hexDigit(), exp.hexDigit() ).map( to4Hex );
 
-    static (App<F, char>, __) escaped<F, __>( this (F, __) impl )
+    static (App<F, char>, __) escaped<F, __>( this (F, __) exp )
       where __ : ParserAlg<F, char>, ApplyAlg<F>, AltAlg<F> =>
-        impl.@char( '\\' ).i_( impl.oneOf( "\"\\" )
-                               .or( impl.@char( 'b' ).map_( '\b' ) )
-                               .or( impl.@char( 'f' ).map_( '\f' ) )
-                               .or( impl.@char( 'n' ).map_( '\n' ) )
-                               .or( impl.@char( 'r' ).map_( '\r' ) )
-                               .or( impl.@char( 't' ).map_( '\t' ) )
-                               .or( impl.@char( 'u' ).i_( impl.hexEscaped() ) )
+        exp.@char( '\\' ).i_( exp.oneOf( "\"\\" )
+                               .or( exp.@char( 'b' ).map_( '\b' ) )
+                               .or( exp.@char( 'f' ).map_( '\f' ) )
+                               .or( exp.@char( 'n' ).map_( '\n' ) )
+                               .or( exp.@char( 'r' ).map_( '\r' ) )
+                               .or( exp.@char( 't' ).map_( '\t' ) )
+                               .or( exp.@char( 'u' ).i_( exp.hexEscaped() ) )
                              );
 
     /*
@@ -52,12 +52,13 @@ namespace Parser.Json {
      * _context_ is explicitly passed through with the help of C# extension methods.
      */
     public static (App<F, j>, __) CreateJsonParser<F, j, __>( JsonSymantics<j> json, (F, __) p ) where
-      __ : ParserAlg<F, char>
-         , MonadAlg<F>
-         , AltAlg<F>
-         , ThrowErrorAlg<F, string>
-         , PlusAlg<Collection>
-         , FoldableAlg<Collection> {
+                                             // To make a JSON parser we need these ingredients:
+      __ : ParserAlg<F, char>                // a language for parsing characters,
+         , MonadAlg<F>                       // which operations can be sequenced
+         , AltAlg<F>                         // with a choice,
+         , ThrowErrorAlg<F, string>          // support to throw errors,
+         , PlusAlg<Collection>               // and a way to collect and
+         , FoldableAlg<Collection> {         // reduce results.
 
       // spaces = many space
       var spaces = p.space().many();

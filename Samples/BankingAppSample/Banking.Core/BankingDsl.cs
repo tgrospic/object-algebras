@@ -46,7 +46,7 @@ namespace Banking {
       where __ : BankingDsl<F>, FunctorAlg<F> =>
         /*
          * This is the place where we need to lift inner computation (Collection) to DSL level.
-         * This means to send current interpreter context (__) to inner computation (in tuple with App<Collection, ...>).
+         * This means to send current interpreter context `__` to inner computation (in a tuple with App<Collection, ...>).
          *
          * This lifting can be done by C# compiler mechanically lifting all `App` values with the current context `__`.
          */

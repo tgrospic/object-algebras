@@ -35,20 +35,20 @@ namespace Algebras.Category {
   public static class Extensions {
 
     // Semigrupoid
-    public static (App<App<F, a>, c>, __) compose<F, a, b, c, __>( this (App<App<F, b>, c> g, __ __) impl, App<App<F, a>, b> f )
-      where __ : SemigrupoidAlg<F> => impl.useSnd( x => x.compose<a, b, c>( impl.g )( f ) );
+    public static (App<App<F, a>, c>, __) compose<F, a, b, c, __>( this (App<App<F, b>, c> g, __ __) exp, App<App<F, a>, b> f )
+      where __ : SemigrupoidAlg<F> => exp.useSnd( x => x.compose<a, b, c>( exp.g )( f ) );
 
     // Category : Semigrupoid
-    public static (App<App<F, a>, a>, __) id<F, a, __>( this __ impl )
-      where __ : CategoryAlg<F> => impl.id<a>().pair( impl );
+    public static (App<App<F, a>, a>, __) id<F, a, __>( this __ ctx )
+      where __ : CategoryAlg<F> => ctx.id<a>().pair( ctx );
 
     // Function
-    public static (Func<a, b>, __) runFun<F, a, b, __>( this (App<App<F, a>, b>, __) impl )
-      where __ : FunctionAlg<F> => impl.useSnd( y => y.runFun( impl.Item1 ) );
+    public static (Func<a, b>, __) runFun<F, a, b, __>( this (App<App<F, a>, b>, __) exp )
+      where __ : FunctionAlg<F> => exp.useSnd( y => y.runFun( exp.Item1 ) );
 
     // Functor
-    public static (App<F, b>, __) map<F, a, b, __>( this (App<F, a>, __) impl, App<App<Func, a>, b> f )
-      where __ : FunctorCat<F>, FunctionAlg<Func> => impl.useSnd( y => y.runFun( y.map( f ) )( impl.Item1 ) );
+    public static (App<F, b>, __) map<F, a, b, __>( this (App<F, a>, __) exp, App<App<Func, a>, b> f )
+      where __ : FunctorCat<F>, FunctionAlg<Func> => exp.useSnd( y => y.runFun( y.map( f ) )( exp.Item1 ) );
   }
 
   // Function _brand_

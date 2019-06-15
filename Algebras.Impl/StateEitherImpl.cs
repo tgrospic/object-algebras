@@ -30,6 +30,7 @@ namespace Data.Impl {
     // Either
     EitherAlg<Either<err>, err>          ei = EitherImpl<err>.Instance;
     ApplicativeAlg<Either<err>>          ap = ApplicativeEither<err>.Instance;
+    // Collection
     PlusAlg<Collection>               plusC = PlusCollection.Instance;
     FoldableAlg<Collection>           foldC = FoldableCollection.Instance;
     // Traversable

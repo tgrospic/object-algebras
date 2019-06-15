@@ -5,7 +5,7 @@ namespace Algebras.Control {
 
   /*
    * Algebraic definitions are based on Object algebras as presented in very exciting paper Extensibility for the Masses.
-   * The difference is to use higher-kinded types to be able to express higher order effects.
+   * The difference here is the use of higher-kinded types to express higher-order effects.
    * https://www.cs.utexas.edu/~wcook/Drafts/2012/ecoop2012.pdf
    */
 
@@ -101,24 +101,24 @@ namespace Algebras.Control {
   public static class Extensions {
 
     // Functor
-    public static (App<F, b>, __) map<F, a, b, __>( this (Func<a, b> f, __) impl, (App<F, a>, __) x )
-      where __ : FunctorAlg<F> => impl.useSnd( y => y.map( impl.f )( x.Item1 ) );
+    public static (App<F, b>, __) map<F, a, b, __>( this (Func<a, b> f, __ ctx) exp, (App<F, a> a, __) x )
+      where __ : FunctorAlg<F> => (exp.ctx.map( exp.f )( x.a ), exp.ctx);
 
-    public static (App<F, b>, __) map<F, a, b, __>( this (App<F, a> x, __) impl, Func<a, b> f )
-      where __ : FunctorAlg<F> => impl.useSnd( y => y.map( f )( impl.x ) );
+    public static (App<F, b>, __) map<F, a, b, __>( this (App<F, a> x, __ ctx) exp, Func<a, b> f )
+      where __ : FunctorAlg<F> => (exp.ctx.map( f )( exp.x ), exp.ctx);
 
     public static (App<F, b>, __) map_<F, a, b, __>( this (App<F, a>, __) x, b bb )
       where __ : FunctorAlg<F> => x.map( _ => bb );
 
     // Apply
-    public static (App<F, b>, __) apply<F, a, b, __>( this (App<F, Func<a, b>> f, __ __) impl, (App<F, a>, __) x )
-      where __ : ApplyAlg<F> => impl.useSnd( y => y.apply( impl.f )( x.Item1 ) );
+    public static (App<F, b>, __) apply<F, a, b, __>( this (App<F, Func<a, b>> f, __ ctx) exp, (App<F, a> a, __) x )
+      where __ : ApplyAlg<F> => (exp.ctx.apply( exp.f )( x.a ), exp.ctx);
 
-    public static (App<F, b>, __) apply<F, a, b, __>( this (App<F, a> a, __ __) impl, (App<F, Func<a, b>>, __) f )
-      where __ : ApplyAlg<F> => impl.useSnd( y => y.apply( f.Item1 )( impl.a ) );
+    public static (App<F, b>, __) apply<F, a, b, __>( this (App<F, a> a, __ __) exp, (App<F, Func<a, b>>, __) f )
+      where __ : ApplyAlg<F> => exp.useSnd( y => y.apply( f.Item1 )( exp.a ) );
 
-    public static (App<F, b>, __) apply<F, a, b, __>( this (App<F, a> a, __ __) impl, App<F, Func<a, b>> f )
-      where __ : ApplyAlg<F> => impl.useSnd( y => y.apply( f )( impl.a ) );
+    public static (App<F, b>, __) apply<F, a, b, __>( this (App<F, a> a, __ __) exp, App<F, Func<a, b>> f )
+      where __ : ApplyAlg<F> => exp.useSnd( y => y.apply( f )( exp.a ) );
 
     // <* *>
     public static (App<F, a>, __) _i<F, a, b, __>( this (App<F, a>, __) x, (App<F, b>, __) y )
@@ -151,22 +151,22 @@ namespace Algebras.Control {
       where __ : ApplyAlg<F> => x.zip( y, z, u, ValueTuple.Create );
 
     // liftA2
-    public static Func<(App<F, a>, __), Func<(App<F, b>, __), (App<F, c>, __)>> liftA2<F, a, b, c, __>( this (F, __) impl,
+    public static Func<(App<F, a>, __), Func<(App<F, b>, __), (App<F, c>, __)>> liftA2<F, a, b, c, __>( this (F, __) exp,
       Func<a, b, c> f )
       where __ : ApplyAlg<F> => aa => bb => aa.zip( bb ).map( x => f( x.Item1, x.Item2 ) );
 
     // liftA2_ - tuple version
-    public static Func<(App<F, a>, __), (App<F, b>, __), (App<F, c>, __)> liftA2_<F, a, b, c, __>( this (F, __) impl,
+    public static Func<(App<F, a>, __), (App<F, b>, __), (App<F, c>, __)> liftA2_<F, a, b, c, __>( this (F, __) exp,
       Func<a, b, c> f )
       where __ : ApplyAlg<F> => ( aa, bb ) => aa.zip( bb ).map( x => f( x.Item1, x.Item2 ) );
 
     // liftA3
-    public static Func<(App<F, a>, __), Func<(App<F, b>, __), Func<(App<F, c>, __), (App<F, d>, __)>>> liftA3<F, a, b, c, d, __>( this (F, __) impl,
+    public static Func<(App<F, a>, __), Func<(App<F, b>, __), Func<(App<F, c>, __), (App<F, d>, __)>>> liftA3<F, a, b, c, d, __>( this (F, __) exp,
       Func<a, b, c, d> f )
       where __ : ApplyAlg<F> => aa => bb => cc => aa.zip( bb, cc ).map( x => f( x.Item1, x.Item2, x.Item3 ) );
 
     // liftA3 - tuple version
-    public static Func<(App<F, a>, __), (App<F, b>, __), (App<F, c>, __), (App<F, d>, __)> liftA3_<F, a, b, c, d, __>( this (F, __) impl,
+    public static Func<(App<F, a>, __), (App<F, b>, __), (App<F, c>, __), (App<F, d>, __)> liftA3_<F, a, b, c, d, __>( this (F, __) exp,
       Func<a, b, c, d> f )
       where __ : ApplyAlg<F> => ( aa, bb, cc ) => aa.zip( bb, cc ).map( x => f( x.Item1, x.Item2, x.Item3 ) );
 
@@ -174,61 +174,61 @@ namespace Algebras.Control {
       where __ : ApplyAlg<F> => open.i_( aa )._i( close );
 
     // Bind
-    public static (App<F, b>, __) bind<F, a, b, __>( this (App<F, a> a, __) impl, Func<a, (App<F, b>, __)> f )
-      where __ : BindAlg<F> => impl.useSnd( y => y.bind<a, b>( impl.a )( x => f( x ).Item1 ) );
+    public static (App<F, b>, __) bind<F, a, b, __>( this (App<F, a> a, __ ctx) exp, Func<a, (App<F, b>, __)> f )
+      where __ : BindAlg<F> => exp.useSnd( y => y.bind<a, b>( exp.a )( x => f( x ).Item1 ) );
 
-    public static (App<F, b>, __) bind<F, a, b, __>( this (App<F, a> a, __) impl, Func<a, App<F, b>> f )
-      where __ : BindAlg<F> => impl.useSnd( y => y.bind<a, b>( impl.a )( x => f( x ) ) );
+    public static (App<F, b>, __) bind<F, a, b, __>( this (App<F, a> a, __) exp, Func<a, App<F, b>> f )
+      where __ : BindAlg<F> => exp.useSnd( y => y.bind<a, b>( exp.a )( x => f( x ) ) );
 
     // Join
-    public static (App<F, a>, __) join<F, a, __>( this (App<F, App<F, a>> a, __) impl )
-      where __ : BindAlg<F> => impl.useSnd( y => y.bind<App<F, a>, a>( impl.a )( identity ) );
+    public static (App<F, a>, __) join<F, a, __>( this (App<F, App<F, a>> a, __) exp )
+      where __ : BindAlg<F> => exp.useSnd( y => y.bind<App<F, a>, a>( exp.a )( identity ) );
 
-    // LINQ syntax (once and) for all `FunctorAlg<F` and `BindAlg<F>`
-    public static (App<F, b>, __) Select<F, a, b, __>( this (App<F, a>, __) impl, Func<a, b> f )
-      where __ : FunctorAlg<F> => impl.map( f );
+    // LINQ syntax (once and) for all `FunctorAlg<F>` and `BindAlg<F>`
+    public static (App<F, b>, __) Select<F, a, b, __>( this (App<F, a>, __) exp, Func<a, b> f )
+      where __ : FunctorAlg<F> => exp.map( f );
 
-    public static (App<F, r>, __) SelectMany<F, a, b, r, __>( this (App<F, a>, __) impl, Func<a, (App<F, b>, __)> f, Func<a, b, r> result )
-      where __ : BindAlg<F> => impl.bind( x => f( x ).map( y => result( x, y ) ) );
+    public static (App<F, r>, __) SelectMany<F, a, b, r, __>( this (App<F, a>, __) exp, Func<a, (App<F, b>, __)> f, Func<a, b, r> result )
+      where __ : BindAlg<F> => exp.bind( x => f( x ).map( y => result( x, y ) ) );
 
     // Applicative
-    public static (App<F, a>, __) pure<F, a, __>( this __ impl, a x )
-      where __ : ApplicativeAlg<F> => impl.pure( x ).pair( impl );
+    public static (App<F, a>, __) pure<F, a, __>( this __ ctx, a x )
+      where __ : ApplicativeAlg<F> => ctx.pure( x ).pair( ctx );
 
-    public static (App<F, a>, __) pure<F, a, __>( this (F, __) impl, a x )
-      where __ : ApplicativeAlg<F> => impl.useSnd( y => y.pure( x ) );
+    public static (App<F, a>, __) pure<F, a, __>( this (F, __) exp, a x )
+      where __ : ApplicativeAlg<F> => exp.useSnd( y => y.pure( x ) );
 
     // Plus
-    public static (App<F, a>, __) empty<F, a, __>( this __ impl )
-      where __ : PlusAlg<F> => impl.empty<a>().pair( impl );
+    public static (App<F, a>, __) empty<F, a, __>( this __ ctx )
+      where __ : PlusAlg<F> => ctx.empty<a>().pair( ctx );
 
-    public static (App<F, a>, __) empty<F, a, __>( this (F, __) impl )
-      where __ : PlusAlg<F> => impl.useSnd( x => x.empty<a>() );
+    public static (App<F, a>, __) empty<F, a, __>( this (F, __) exp )
+      where __ : PlusAlg<F> => exp.useSnd( x => x.empty<a>() );
 
     // Alt
-    public static (App<F, a>, __) or<F, a, __>( this (App<F, a> x, __ __) impl, (App<F, a>, __) y )
-      where __ : AltAlg<F> => impl.useSnd( z => z.alt( impl.x )( y.Item1 ) );
+    public static (App<F, a>, __) or<F, a, __>( this (App<F, a> x, __) exp, (App<F, a> a, __) y )
+      where __ : AltAlg<F> => exp.useSnd( z => z.alt( exp.x )( y.a ) );
 
     // ThrowError
-    public static (App<F, a>, __) fail<F, s, a, __>( this (F, __) impl, s message )
-      where __ : ThrowErrorAlg<F, s> => impl.useSnd( x => x.throwError<a>( message ) );
+    public static (App<F, a>, __) fail<F, s, a, __>( this (F, __) exp, s message )
+      where __ : ThrowErrorAlg<F, s> => exp.useSnd( x => x.throwError<a>( message ) );
 
     // Foldable
-    public static Func<Func<a, b, b>, b> foldr<F, a, b, __>( this (App<F, a> aa, __ __) x, b bb )
-      where __ : FoldableAlg<F> => f => x.__.foldr( f )( bb )( x.aa );
+    public static Func<Func<a, b, b>, b> foldr<F, a, b, __>( this (App<F, a> a, __ ctx) x, b init )
+      where __ : FoldableAlg<F> => f => x.ctx.foldr( f )( init )( x.a );
 
-    public static Func<Func<b, a, b>, b> foldl<F, a, b, __>( this (App<F, a> aa, __ __) x, b bb )
-      where __ : FoldableAlg<F> => f => x.__.foldl( f )( bb )( x.aa );
+    public static Func<Func<b, a, b>, b> foldl<F, a, b, __>( this (App<F, a> a, __ ctx) x, b init )
+      where __ : FoldableAlg<F> => f => x.ctx.foldl( f )( init )( x.a );
 
     public static (App<M, Unit>, __) traverse_<F, M, a, b, __>(
         this Func<a, (App<M, b>, __)> f,
-        (App<F, a>, __ __) x
+        (App<F, a>, __ ctx) x
       )
       where __ : FoldableAlg<F>, ApplicativeAlg<M> =>
-      x.foldr( x.__.pure<M, Unit, __>( Unit.Val ) )( ( aa, unit ) => f( aa ).i_( unit ) );
+      x.foldr( x.ctx.pure<M, Unit, __>( Unit.Val ) )( ( aa, unit ) => f( aa ).i_( unit ) );
 
     public static (App<M, Unit>, __) for_<F, M, a, b, __>(
-        this (App<F, a>, __ __) x,
+        this (App<F, a>, __) x,
         Func<a, (App<M, b>, __)> f
       )
       where __ : FoldableAlg<F>, ApplicativeAlg<M> => f.traverse_( x );

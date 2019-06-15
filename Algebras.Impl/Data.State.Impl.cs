@@ -32,7 +32,7 @@ namespace Data.State.Impl {
     class StateHKT<a> : NewType1<StateC<a>, State<s>, a> { }
 
     /*
-     * Injection function : _lifts_ a concrete type to App type.
+     * Injection function - _lifts_ a concrete type to App type.
      */
     static App<State<s>, a> inj<a>( StateC<a> x ) => StateHKT<a>.I.Inj( x );
 
