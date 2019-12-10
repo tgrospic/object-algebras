@@ -17,11 +17,11 @@ public interface FunctorAlg<F> {
   Func<App<F, a>, App<F, b>> map<a, b>( Func<a, b> f );
 }
 ```
-Having `App` apstraction enables us to overcome some limitations present in very nice functional library for C# [language-ext][lang-ext] by Paul Louth. Most importantly, interface definition can be free of specific generic type `a` and `b` which gives very straightforward translation from Haskell. To be more precise this implementation follows PureScript control hierarchy which is more granular (e.g. [Functor][purescript-functor], [Bind][purescript-bind]). ​Also defining functions in the carried form was extremely useful and well suited to define e.g. [JSON parser][json-parser].
+Having `App` abstraction enables us to overcome some limitations present in the great functional library for C# [language-ext][lang-ext] by Paul Louth. Most importantly, interface definition can be free of specific generic type `a` and `b` which gives a very straightforward translation from Haskell. To be more precise, this implementation follows PureScript control hierarchy, which is more granular (e.g. [Functor][purescript-functor], [Bind][purescript-bind]). ​Also defining functions in the curried form is extremely useful and well suited for definitions e.g. [JSON parser][json-parser].
 
 ## 2. Object algebras
 
-_Object algebras_ as presented in very inspiring paper (for OO programmer :)) [Extensibility for the Masses][ext-for-masses]. It offers a solution to the expression problem with only lightweight language features (although it's not clear to me how to express higher-order effects without represenation for higher-kinded types).
+_Object algebras_ as presented in the very inspiring paper (for OO programmer :)) [Extensibility for the Masses][ext-for-masses]. It offers a solution to the expression problem with only lightweight language features (although it's not clear to me how to express higher-order effects without represenation for higher-kinded types).
 
 E.g. the definition of a `State` is expressed as multi-sorted object algebra (family polymorphism).
 
@@ -46,13 +46,13 @@ _This is the source of `Alg` suffix and probably also other syntax differences w
 
 ## 3. Effects - _interaction_ with the _context_
 
-The third component is the glue for the first two and shapes the perspective on effects. It is influenced by Oleg Kiselyov excellent work presented on his site. He has numerous explanations and examples that have been very helpful to translate Haskell code to C#.  
-This description of (higher-order) effects is what guided implementation of this library and best describes how to approach it.
+The third component is the glue for the first two and shapes the perspective on effects. It is influenced by Oleg Kiselyov excellent work presented on his site. He has numerous explanations and examples that have been very helpful in translating Haskell code to C#.  
+This description of (higher-order) effects is what guided the implementation of this library and best describes how to approach it.
 
 > We argue that the central problem of the interaction of higher-order programming with various kinds of effects can be tackled by eliminating the distinction: higher-order facility is itself an effect, not too different from state effect.  
 http://okmij.org/ftp/Computation/having-effect.html#Conclusions
 
-The _expression_ in (effectful) language is created as a tuple from `App<F, a>` which represent higher-kinded value with `F` as a type constructor applied to a generic value of type `a` and the _context_ as a generic type (named shortly `__`) but _bounded_ with one or many (effect) algebras, interfaces like functor `FoldableAlg<F>`. C# extension methods are used to combine (extend) these _expressions_.
+The _expression_ in (effectful) language is created as a tuple from `App<F, a>` which represent higher-kinded value with `F` as a type constructor applied to a generic value of type `a` and the _context_ as a generic type (named shortly `__`), but _bounded_ with one or many (effect) algebras, interfaces like the functor `FoldableAlg<F>`. C# extension methods are used to combine (extend) these _expressions_.
 
 ```csharp
 public static (App<M, Unit>, __) traverse_<F, M, a, b, __>(
@@ -69,9 +69,9 @@ public static (App<M, Unit>, __) for_<F, M, a, b, __>(
   where __ : FoldableAlg<F>, ApplicativeAlg<M> => f.traverse_( x );
 ```
 
-These _effect_ expressions can be seen as definitions of interaction with the computation context (producing effects). They are central tool to write domain logic and to build bigger programs from smaller pieces.
+These _effect_ expressions can be seen as definitions of interactions with the computation context (producing effects). They are the central tools for writing domain logic and building bigger programs from smaller pieces.
 
-Boilerplate code is needed to _lift_ algebra functions with the context - to expression (DSL) level.
+Boilerplate code is needed to _lift_ algebra functions with a given context - to expression (DSL) level.
 
 ```csharp
 // Functor example with map "lifted"
@@ -89,13 +89,13 @@ public static Func<Func<a, b, b>, b> foldr<F, a, b, __>( this (App<F, a> a, __ c
 public static (App<F, char>, __) @char<F, __>( this (F, __) exp, char c )
   where __ : ParserAlg<F, char> => exp.satisfy( ci => ci == c );
 ```
-Techniques used in this library can be applied in any language with bounded polymorphism like F#, Kotlin or Java for which similar libraries exist.
+Techniques used in this library can be applied in any language with bounded polymorphism like F#, Kotlin, or Java, for which similar libraries exist.
 
 # Effect handlers
 
-Until now we didn't mentioned instances or interpreters for our embeded language. From effects point of view they represent effect handlers, where the _real work_ is done.
+Until now we didn't mentioned instances or interpreters for our embeded language. From an effects point of view, they represent effect handlers, where the _real work_ is done.
 
-To implement a `char` parser, only one class is needed that inherits (extend) generic implementation of the state monad with a choice.
+To implement a `char` parser, only one class is needed that inherits (extends) the generic implementation of the state monad with choice.
 
 ```csharp
 // Char parser implementation with String as both, parser state (input) and parser error.
@@ -119,9 +119,9 @@ class ParserCharImpl : StateEitherImpl<string, string>, ParserAlg<State<string>,
 
 # Desired language features
 
-Combining multiple handlers is done with explicit implementation of multiple interfaces e.g. [StateEitherImpl](Algebras.Impl/StateEitherImpl.cs). For this purpose something like _explicit mixins_ would be a useful feature. In essence, this is where the dependency graph is created and existing techniques for dependency injection can be used. _Implicits_ also fall into this category as a constant dependency.
+Combining multiple handlers is done with explicit implementation of multiple interfaces, e.g. [StateEitherImpl](Algebras.Impl/StateEitherImpl.cs). For this purpose, something like _explicit mixins_ would be a useful feature. In essence, this is where the dependency graph is created and existing techniques for dependency injection can be used. _Implicits_ also fall into this category as a constant dependency.
 
-Although `App<F, a>` type as representation for higher-kinds is usable in this form, it can be very hard to read for nested types. With only syntactic level support from the compiler, the improvement would be enormous.
+Although `App<F, a>` type as a representation for higher-kinds is usable in this form, it can be very hard to read for nested types. With only syntactic level support from the compiler, the improvement would be enormous.
 
 Working with multiple generic parameters sometimes requires the explicit definition of only one parameter while others can be inferred. But because of this one, all parameters must be specified. Wildcard as a generic parameter would greatly reduce duplicating types known by the compiler.
 
@@ -131,7 +131,7 @@ This example shows how to create `Maybe` type which represents optional value.
 
 ## 1. Define effect algebra
 
-First we need to define Maybe algebra which means to define signature creation and elimination `Maybe` values. Maybe has two constructors, so to deconstruct two functions handle each case and unify the result type.
+First we need to define a `Maybe` algebra which means we need to define signature creation and elimination `Maybe` values. `Maybe` has two constructors, so we need to deconstruct two functions, handle each case appropriately, and unify the result type.
 
 ```csharp
 // Maybe algebra
@@ -147,7 +147,7 @@ public interface MaybeAlg<F> {
 
 ## 2. Define _lifted_ functions with the _context_ (boilerplate code)
 
-These are the functions that we really use in our code, not the functions on interfaces directly. They represent expressions in our DSL language.
+These are the functions we actually use in our code, not the functions on interfaces directly. They represent expressions in our DSL language.
 
 ```csharp
 // nothing
@@ -164,7 +164,7 @@ public static b runMaybe<F, a, b, __>( this (App<F, a> x, __ ctx) ma, Func<b> on
 ```
 ## 3. Define _higher-kinded_ representation (type constructor)
 
-Higher-kinded type is just an empty interface definition which represents `Maybe :: Type -> Type` type constructor, without generic parameter like `Maybe<a>`.  
+The higher-kinded type is just an empty interface definition which represents `Maybe :: Type -> Type` type constructor, without generic parameter like `Maybe<a>`.  
 Specific implementation of `Maybe` deals with the concrete representation where generic parameter `a` is applied (on the type level) to this type `App<Maybe, a>`.
 
 ```csharp
