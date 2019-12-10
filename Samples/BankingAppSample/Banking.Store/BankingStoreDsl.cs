@@ -40,7 +40,8 @@ namespace Banking {
 
     // BankingStoreDsl extensions - functions built from existing BankingStoreDsl functions.
 
-    /* This is expression on DSL level. It depends only on interpreted language.
+    /* 
+     * This is expression on DSL level. It depends only on interpreted language.
      * It also uses higher-order effect (monad `bind`) to sequence the computation which allows
      * LINQ syntax for all instances of `BindAlg<F>`.
      *

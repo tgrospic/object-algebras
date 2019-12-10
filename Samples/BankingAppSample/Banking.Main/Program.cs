@@ -12,7 +12,7 @@ namespace BankingAppSample {
 
       /*
        * This Banking sample app is a re-implementation of the sample from very nice functional C# library **language-ext** by Paul Louth!
-       * https://github.com/louthy/language-ext/tree/master/Samples/BankingAppSample
+       * https://github.com/louthy/language-ext/tree/06968aa/Samples/BankingAppSample
        *
        * His implementation uses Free Monad to capture effects. Here effects are algebras which constraint or define
        * interaction with the _context_ or interpreter (implementation).
@@ -49,6 +49,7 @@ namespace BankingAppSample {
      * actions that represent an interaction with the 'world' (i.e IO,
      * databases, global state, etc.) then you can compose those actions
      * without having to add new functions to the `BankingDsl` DSL.
+     * https://github.com/louthy/language-ext/blob/06968aa/Samples/BankingAppSample/BankingAppSample/Program.cs#L29
      * 
      * To extend BankingDsl means to define new algebra with new actions.
      * This is exactly how printer is defined.

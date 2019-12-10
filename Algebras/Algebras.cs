@@ -8,7 +8,7 @@ namespace Algebras {
    */
 
   // Type constructor (type-level `App`lication)
-  // `B` represent a Brand type
+  // `B` represents a Brand type
   public interface App<B, a> { } // ~~ B<a>
 
   // Higher-kinded type constructor with injection and projection functions.
