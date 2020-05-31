@@ -9,6 +9,7 @@ namespace Data.Impl {
   using Data.Either.Impl;
   using Data.State;
   using Data.State.Impl;
+  using System.Collections.Generic;
 
   public class StateEitherImpl<st, err>
     : EitherAlg<Either<err>, err>
@@ -18,6 +19,7 @@ namespace Data.Impl {
     , ThrowErrorAlg<State<st>, err>
     , StateAlg<State<st>, Either<err>, st>
     , TraversableAlg<Collection, State<st>>
+    , CollectionAlg<Collection>
     , FunctorAlg<Collection>
     , PlusAlg<Collection>
     , FoldableAlg<Collection> {
@@ -31,6 +33,7 @@ namespace Data.Impl {
     EitherAlg<Either<err>, err>          ei = EitherImpl<err>.Instance;
     ApplicativeAlg<Either<err>>          ap = ApplicativeEither<err>.Instance;
     // Collection
+    CollectionAlg<Collection>          coll = CollectionImpl.Instance;
     PlusAlg<Collection>               plusC = PlusCollection.Instance;
     FoldableAlg<Collection>           foldC = FoldableCollection.Instance;
     // Traversable
@@ -57,6 +60,11 @@ namespace Data.Impl {
     App<Either<err>, a> EitherAlg<Either<err>, err>.left<a>( err ee )                                             => ei.left<a>( ee );
     App<Either<err>, a> EitherAlg<Either<err>, err>.right<a>( a aa )                                              => ei.right( aa );
     b EitherAlg<Either<err>, err>.either<a, b>( App<Either<err>, a> ea, Func<err, b> onLeft, Func<a, b> onRight ) => ei.either( ea, onLeft, onRight );
+    // Collection
+    App<Collection, a> CollectionAlg<Collection>.nil<a>()                                   => coll.nil<a>();
+    App<Collection, a> CollectionAlg<Collection>.cons<a>( a head, App<Collection, a> tail ) => coll.cons( head, tail );
+    App<Collection, a> CollectionAlg<Collection>.list<a>( IEnumerable<a> xs )               => coll.list( xs );
+    IEnumerable<a> CollectionAlg<Collection>.enumerable<a>( App<Collection, a> c )          => coll.enumerable( c );
     // Throw
     App<State<st>, a> ThrowErrorAlg<State<st>, err>.throwError<a>( err ex ) => th.throwError<a>( ex );
 

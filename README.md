@@ -131,7 +131,7 @@ This example shows how to create `Maybe` type which represents optional value.
 
 ## 1. Define effect algebra
 
-First we need to define a `Maybe` algebra which means we need to define signature creation and elimination `Maybe` values. `Maybe` has two constructors, so we need to deconstruct two functions, handle each case appropriately, and unify the result type.
+First we need to define a `Maybe` algebra which means we need to define signature creation and elimination `Maybe` values. `Maybe` has two constructors, so to deconstruct we need two functions, handle each case appropriately, and unify the result type.
 
 ```csharp
 // Maybe algebra

@@ -27,6 +27,7 @@ namespace Demo.RunJson {
          , ThrowErrorAlg<F, string>
          , MonadAlg<F>
          , AltAlg<F>
+         , CollectionAlg<Collection>
          , PlusAlg<Collection>
          , FoldableAlg<Collection> {
 

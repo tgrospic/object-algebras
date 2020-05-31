@@ -52,13 +52,15 @@ namespace Parser.Json {
      * _context_ is explicitly passed through with the help of C# extension methods.
      */
     public static (App<F, j>, __) CreateJsonParser<F, j, __>( JsonSymantics<j> json, (F, __) p ) where
-                                             // To make a JSON parser we need these ingredients:
-      __ : ParserAlg<F, char>                // a language for parsing characters,
-         , MonadAlg<F>                       // which operations can be sequenced
-         , AltAlg<F>                         // with a choice,
-         , ThrowErrorAlg<F, string>          // support to throw errors,
-         , PlusAlg<Collection>               // and a way to collect and
-         , FoldableAlg<Collection> {         // reduce results.
+                                     // To make a JSON parser we need these ingredients:
+                                     // - each dependency brings specific capability
+      __ : ParserAlg<F, char>        // a language for parsing characters,
+         , MonadAlg<F>               // which operations can be sequenced
+         , AltAlg<F>                 // with a choice (branching),
+         , ThrowErrorAlg<F, string>  // support to throw errors,
+         , CollectionAlg<Collection> // a way to collect,
+         , FoldableAlg<Collection>   // and reduce results
+         , PlusAlg<Collection> {     // which can be empty.
 
       // spaces = many space
       var spaces = p.space().many();

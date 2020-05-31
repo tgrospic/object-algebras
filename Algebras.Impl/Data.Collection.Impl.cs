@@ -1,60 +1,80 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Data.Collection.Impl {
   using Algebras;
   using Algebras.Control;
   using static Algebras.Static;
-  using static Data.Collection.Impl.Static;
+
+  public class CollectionImpl : CollectionAlg<Collection> {
+
+    public static CollectionAlg<Collection> Instance = new CollectionImpl();
+
+    class Collection<a> : NewType1<IEnumerable<a>, Collection, a> { }
+
+    static App<Collection, a> inj<a>( IEnumerable<a> x ) => Collection<a>.I.Inj( x );
+    static IEnumerable<a> prj<a>( App<Collection, a> x ) => Collection<a>.I.Prj( x );
+
+    static IEnumerable<a> cons<a>( a x, IEnumerable<a> xs ) { yield return x; foreach ( var xx in xs ) yield return xx; }
+
+    public App<Collection, a> cons<a>( a head, App<Collection, a> tail ) => inj( cons( head, prj( tail ) ) );
+
+    public App<Collection, a> nil<a>() => inj( Enumerable.Empty<a>() );
+
+    public App<Collection, a> list<a>( IEnumerable<a> xs ) => inj( xs );
+
+    public IEnumerable<a> enumerable<a>( App<Collection, a> c ) => prj( c );
+  }
 
   // Functor
   public class FunctorCollection : FunctorAlg<Collection> {
-    protected FunctorCollection() { }
+    CollectionAlg<Collection> co = CollectionImpl.Instance;
     public Func<App<Collection, a>, App<Collection, b>> map<a, b>( Func<a, b> f ) =>
-      x => x.Prj().Select( f ).Inj();
+      x => co.list( co.enumerable( x ).Select( f ) );
 
     public static FunctorAlg<Collection> Instance = new FunctorCollection();
   }
 
   // Apply : Functor
   public class ApplyCollection : FunctorCollection, ApplyAlg<Collection> {
-    protected ApplyCollection() { }
+    CollectionAlg<Collection> co = CollectionImpl.Instance;
     public Func<App<Collection, a>, App<Collection, b>> apply<a, b>( App<Collection, Func<a, b>> f ) =>
-      x => f.Prj().SelectMany( ff => x.Prj().Select( ff ) ).Inj();
+      x => co.list( co.enumerable( f ).SelectMany( ff => co.enumerable( x ).Select( ff ) ) );
 
     public static new ApplyAlg<Collection> Instance = new ApplyCollection();
   }
 
   // Bind : Apply
   public class BindCollection : ApplyCollection, BindAlg<Collection> {
-    protected BindCollection() { }
+    CollectionAlg<Collection> co = CollectionImpl.Instance;
     public Func<Func<a, App<Collection, b>>, App<Collection, b>> bind<a, b>( App<Collection, a> x ) =>
-      f => x.Prj().SelectMany( y => f( y ).Prj() ).Inj();
+      f => co.list( co.enumerable( x ).SelectMany( y => co.enumerable( f( y ) ) ) );
 
     public static new BindAlg<Collection> Instance = new BindCollection();
   }
 
   // Alt : Functor
   public class AltCollection : FunctorCollection, AltAlg<Collection> {
-    protected AltCollection() { }
+    CollectionAlg<Collection> co = CollectionImpl.Instance;
     public Func<App<Collection, a>, App<Collection, a>> alt<a>( App<Collection, a> x ) =>
-      y => x.Prj().Concat( y.Prj() ).Inj();
+      y => co.list( co.enumerable( x ).Concat( co.enumerable( y ) ) );
 
     public static new AltAlg<Collection> Instance = new AltCollection();
   }
 
   // Applicative : Apply
   public class ApplicativeCollection : ApplyCollection, ApplicativeAlg<Collection> {
-    protected ApplicativeCollection() { }
-    public App<Collection, a> pure<a>( a x ) => new[] { x }.Inj();
+    CollectionAlg<Collection> co = CollectionImpl.Instance;
+    public App<Collection, a> pure<a>( a x ) => co.list( new[] { x } );
 
     public static new ApplicativeAlg<Collection> Instance = new ApplicativeCollection();
   }
 
   // Plus : Alt
   public class PlusCollection : AltCollection, PlusAlg<Collection> {
-    protected PlusCollection() { }
-    public App<Collection, a> empty<a>() => Enumerable.Empty<a>().Inj();
+    CollectionAlg<Collection> co = CollectionImpl.Instance;
+    public App<Collection, a> empty<a>() => co.list( Enumerable.Empty<a>() );
 
     public static new PlusAlg<Collection> Instance = new PlusCollection();
   }
@@ -86,23 +106,23 @@ namespace Data.Collection.Impl {
 
   // Foldable
   public class FoldableCollection : FoldableAlg<Collection> {
-    protected FoldableCollection() { }
-    public Func<b, Func<App<Collection, a>, b>> foldl<a, b>( Func<b, a, b> f ) => bb => xs => xs.Prj().Aggregate( bb, f );
-    public Func<b, Func<App<Collection, a>, b>> foldr<a, b>( Func<a, b, b> f ) => bb => xs => xs.Prj().Aggregate( bb, ( acc, x ) => f( x, acc ) );
+    CollectionAlg<Collection> co = CollectionImpl.Instance;
+    public Func<b, Func<App<Collection, a>, b>> foldl<a, b>( Func<b, a, b> f ) => bb => xs => co.enumerable( xs ).Aggregate( bb, f );
+    public Func<b, Func<App<Collection, a>, b>> foldr<a, b>( Func<a, b, b> f ) => bb => xs => co.enumerable( xs ).Aggregate( bb, ( acc, x ) => f( x, acc ) );
 
     public static FoldableAlg<Collection> Instance = new FoldableCollection();
   }
 
   // Traversable
   public class TraversableCollection<M> : TraversableAlg<Collection, M> {
-    PlusAlg<Collection>      ap = PlusCollection.Instance;
-    FoldableAlg<Collection> fld = FoldableCollection.Instance;
-    ApplicativeAlg<M>       apM;
+    CollectionAlg<Collection> co = CollectionImpl.Instance;
+    FoldableAlg<Collection>  fld = FoldableCollection.Instance;
+    ApplicativeAlg<M>        apM;
     public TraversableCollection( ApplicativeAlg<M> x ) { apM = x; }
 
     public Func<App<Collection, a>, App<M, App<Collection, b>>> traverse<a, b>( Func<a, App<M, b>> f ) => x =>
-      (x, fld).foldl( apM.pure( ap.empty<b>() ) )( ( acc, aa ) => {
-        var liftCons = (default( M ), apM).liftA2<M, b, App<Collection, b>, App<Collection, b>, ApplicativeAlg<M>>( ( x1, x2 ) => cons<ApplicativeAlg<M>, b>( x1 )( (x2, apM) ).Item1 );
+      (x, fld).foldl( apM.pure( co.nil<b>() ) )( ( acc, aa ) => {
+        var liftCons = (default( M ), apM).liftA2<M, b, App<Collection, b>, App<Collection, b>, ApplicativeAlg<M>>( ( x1, x2 ) => co.cons( x1 )( (x2, co) ).Item1 );
 
         return liftCons( (f( aa ), apM) )( (acc, apM) ).Item1;
       } );

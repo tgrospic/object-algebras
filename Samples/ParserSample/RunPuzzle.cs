@@ -7,7 +7,6 @@ namespace Demo.RunPuzzle {
   using Data.Either;
   using Parser.Char;
   using Data.State;
-  using static Data.Collection.Impl.Static;
   using static Parser.Char.Static;
 
   class Static {
@@ -36,6 +35,7 @@ namespace Demo.RunPuzzle {
          , ApplicativeAlg<Either<string>>
          , MonadAlg<F>
          , AltAlg<F>
+         , CollectionAlg<Collection>
          , ThrowErrorAlg<F, string>
          , PlusAlg<Collection>
          , FoldableAlg<Collection>
@@ -47,7 +47,7 @@ namespace Demo.RunPuzzle {
       var pCode    = p.@char( '(' ).i_( pIntPair )._i( p.@char( ')' ) );
 
       // PART 1
-      (App<F, string>, __) mkSubP( (int x, int y) a ) => p.anyString( a.x ).map( ss => strJoin( replicate( ss, a.y ).pair( p.Item2 ) ) );
+      (App<F, string>, __) mkSubP( (int x, int y) a ) => p.anyString( a.x ).map( ss => strJoin( p.Item2.replicate( ss, a.y ) ) );
 
       var pCodeExpr = pCode.bind( mkSubP );
 

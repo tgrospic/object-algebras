@@ -17,6 +17,7 @@ namespace BankingAppSample {
     StringBuilder activityLog = new StringBuilder();
 
     EitherAlg<Either<string>, string> _ea = EitherImpl<string>.Instance;
+    CollectionAlg<Collection> _co = CollectionImpl.Instance;
 
     App<Either<string>, a> value<a>( a x )        => _ea.right( x );
     App<Either<string>, a> error<a>( string err ) => _ea.left<a>( err );
@@ -64,7 +65,7 @@ namespace BankingAppSample {
 
     public App<Either<string>, App<Collection, Transaction>> Transactions() {
       activityLog.AppendLine( $"Transactions: - count {transactions.Count}" );
-      return value( transactions.Inj() );
+      return value( _co.list( transactions ) );
     }
 
   }

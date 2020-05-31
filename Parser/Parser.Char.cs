@@ -4,10 +4,8 @@ namespace Parser.Char {
   using Algebras;
   using Algebras.Control;
   using Data.Collection;
-  using Data.Collection.Impl;
   using Data.Either;
   using Data.State;
-  using static Data.Collection.Impl.Static;
   using static Static;
 
   // class ParserAlg f a where
@@ -105,7 +103,7 @@ namespace Parser.Char {
 
     // number
     public static (App<F, int>, __) number<F, __>( this (F, __) exp )
-      where __ : ParserAlg<F, char>, MonadAlg<F>, AltAlg<F>, PlusAlg<Collection>, FoldableAlg<Collection> =>
+      where __ : ParserAlg<F, char>, MonadAlg<F>, AltAlg<F>, CollectionAlg<Collection>, FoldableAlg<Collection> =>
         exp.digit().manyS1().map( Int32.Parse );
 
     // fail
@@ -115,18 +113,17 @@ namespace Parser.Char {
 
     // many
     public static (App<F, string>, __) manyS<F, __>( this (App<F, char>, __) exp )
-      where __ : MonadAlg<F>, AltAlg<F>, PlusAlg<Collection>, FoldableAlg<Collection> =>
+      where __ : MonadAlg<F>, AltAlg<F>, CollectionAlg<Collection>, FoldableAlg<Collection> =>
         exp.many().map( charJoin );
 
     public static (App<F, string>, __) manyS1<F, __>( this (App<F, char>, __) exp )
-      where __ : MonadAlg<F>, AltAlg<F>, PlusAlg<Collection>, FoldableAlg<Collection> =>
+      where __ : MonadAlg<F>, AltAlg<F>, CollectionAlg<Collection>, FoldableAlg<Collection> =>
         exp.many1().map( charJoin );
 
     // string
-    public static (App<F, string>, __) @string<F, __>( this (F, __) exp, string s )
-      where __ : ParserAlg<F, char>, ApplicativeAlg<F>, FunctorAlg<Collection>, FoldableAlg<Collection> =>
-        // TODO: this is a hack to use injection directly, use CollectionAlg when implemented
-        s.ToCharArray().Inj().pair( exp.Item2 )
+    public static (App<F, string>, __) @string<F, __>( this (F, __ __) exp, string s )
+      where __ : ParserAlg<F, char>, ApplicativeAlg<F>, CollectionAlg<Collection>, FunctorAlg<Collection>, FoldableAlg<Collection> =>
+        s.ToCharArray().list( exp.__ )
           .map( x => exp.@char( x ) )
           .foldl( exp.pure( "" ) )( exp.liftA2_( ( string acc, char x ) => $"{acc}{x}" ) );
 
@@ -141,9 +138,9 @@ namespace Parser.Char {
 
     // TODO: anyString - with traversable, make stack overflow safe
     public static (App<F, string>, __) anyString_<F, __>( this (F, __) exp, int n )
-      where __ : ParserAlg<F, char>, ApplicativeAlg<F>, FoldableAlg<Collection>, TraversableAlg<Collection, F> {
-      var Coll_F = replicate( exp.anychar().Item1, n );
-      var F_Coll = (Coll_F, exp.Item2).sequence();
+      where __ : ParserAlg<F, char>, ApplicativeAlg<F>, CollectionAlg<Collection>, FoldableAlg<Collection>, TraversableAlg<Collection, F> {
+      var Coll_F = exp.Item2.replicate( exp.anychar().Item1, n );
+      var F_Coll = Coll_F.sequence();
 
       return F_Coll.map( x => charJoin( (x, exp.Item2) ) );
     }

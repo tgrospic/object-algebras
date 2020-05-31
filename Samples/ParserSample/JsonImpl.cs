@@ -34,18 +34,20 @@ namespace Demo {
   }
 
   class JObject : JValue {
+    CollectionAlg<Collection> co = CollectionImpl.Instance;
     public App<Collection, (string, JValue)> Val;
     public JObject( App<Collection, (string, JValue)> v ) => Val = v;
     public override string ToString() {
-      var kv = Val.Prj().Select( x => $"\"{x.Item1}\": {x.Item2}" );
+      var kv = co.enumerable( Val ).Select( x => $"\"{x.Item1}\": {x.Item2}" );
       return $"{{ {string.Join( ", ", kv )} }}";
     }
   }
 
   class JArray : JValue {
+    CollectionAlg<Collection> co = CollectionImpl.Instance;
     public App<Collection, JValue> Val;
     public JArray( App<Collection, JValue> v ) => Val = v;
-    public override string ToString() => $"[ {string.Join( ", ", Val.Prj() )} ]";
+    public override string ToString() => $"[ {string.Join( ", ", co.enumerable( Val ) )} ]";
   }
 
   class JsonImpl : JsonSymantics<JValue> {
