@@ -1,5 +1,13 @@
 # Experiments with higher-kinded types, object algebras and effects
 
+[![Build & test][ga-badge]][ga-url]
+[![License][license-badge]][license-url]
+
+[ga-badge]: https://github.com/tgrospic/object-algebras/actions/workflows/dotnet.yml/badge.svg?branch=master
+[ga-url]: https://github.com/tgrospic/object-algebras/actions/workflows/dotnet.yml
+[license-badge]: https://img.shields.io/github/license/tgrospic/object-algebras
+[license-url]: https://github.com/tgrospic/object-algebras/blob/master/LICENSE
+
 The aim of this library is to explore solutions for the _expression problem_ with implementation of _higher-kinded types_ in C#. It is composed from three major components. 
 
 ## 1. Lightweight higher-kinded polymorphism
@@ -171,3 +179,75 @@ Specific implementation of `Maybe` deals with the concrete representation where 
 // Maybe lightweight HKT
 public interface Maybe { }
 ```
+
+## Build and test
+
+This repo targets .NET 8 via `global.json`.
+Lowercase generic type parameters (e.g. `a`, `b`) are used intentionally to mirror the HKT/Object Algebra notation; the CS8981 warning is suppressed in `Directory.Build.props`.
+The `Justfile` mirrors the commands below to keep CI and local usage in sync.
+
+Restore:
+
+```sh
+dotnet restore ObjectAlgebras.sln
+# or with Just installed
+just restore
+```
+
+Build:
+
+```sh
+dotnet build ObjectAlgebras.sln -c Release
+# or with Just installed
+just build
+```
+
+Format:
+
+```sh
+dotnet format ObjectAlgebras.sln
+# or with Just installed
+just fmt
+```
+
+Pack:
+
+```sh
+dotnet pack ObjectAlgebras.sln -c Release
+# or with Just installed
+just pack
+```
+
+Clean:
+
+```sh
+dotnet clean ObjectAlgebras.sln -c Release
+# or with Just installed
+just clean
+```
+
+## Samples
+
+Parser sample:
+
+```sh
+dotnet run --project Samples/ParserSample/ParserSample.csproj
+# or with Just installed
+just run-parser
+```
+
+Banking sample:
+
+```sh
+dotnet run --project Samples/BankingAppSample/Banking.Main/Banking.Main.csproj
+# or with Just installed
+just run-banking
+```
+
+## Contributing
+
+Issues and pull requests are welcome.
+
+## License
+
+MIT license. See `LICENSE`.

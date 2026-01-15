@@ -1,0 +1,50 @@
+name: Build & test
+
+on:
+  push:
+    branches:
+    - trying
+    - staging
+    - master
+    tags: '**'
+  pull_request:
+    branches:
+    - master
+    - 'feature/**'
+    - 'release/**'
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+
+jobs:
+  build:
+    name: 🚀 Build and test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Install Just
+      uses: taiki-e/install-action@just
+
+    - name: Restore
+      run: just restore
+
+    - name: 🚀 Build
+      run: just build
+
+    - name: Pack
+      run: just pack
+
+    - name: 🧪 Run parser sample
+      run: just run-parser
+
+    - name: 🧪 Run banking sample
+      run: just run-banking
