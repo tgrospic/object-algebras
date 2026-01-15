@@ -182,7 +182,7 @@ public interface Maybe { }
 
 ## Build and test
 
-This repo targets .NET 8 via `global.json`.
+This repo targets .NET 10 via `global.json`.
 Lowercase generic type parameters (e.g. `a`, `b`) are used intentionally to mirror the HKT/Object Algebra notation; the CS8981 warning is suppressed in `Directory.Build.props`.
 The `Justfile` mirrors the commands below to keep CI and local usage in sync.
 
